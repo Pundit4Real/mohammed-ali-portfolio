@@ -1,6 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 
@@ -52,10 +53,10 @@ export default function Projects() {
   const filtered = activeFilter === "All" ? projects : projects.filter((p) => p.tags.includes(activeFilter))
 
   return (
-    <main>
+    <main className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="py-20 px-4">
+      <section className="flex-1 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Projects</h1>
           <p className="text-xl text-secondary mb-12">A curated selection of my best technical work.</p>
@@ -107,6 +108,8 @@ export default function Projects() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </main>
   )
 }

@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import { useState } from "react"
 import { Mail, Phone, Github, Youtube } from "lucide-react"
 
@@ -29,10 +30,10 @@ export default function Contact() {
   ]
 
   return (
-    <main>
+    <main className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="py-20 px-4">
+      <section className="flex-1 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Contact Me</h1>
           <p className="text-xl text-secondary mb-16">Let's build something exceptional together.</p>
@@ -120,6 +121,8 @@ export default function Contact() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </main>
   )
 }
