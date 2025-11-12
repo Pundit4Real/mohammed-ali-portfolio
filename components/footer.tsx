@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Linkedin, Twitter } from "lucide-react"
+import { Github, Linkedin, Twitter, X } from "lucide-react"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -13,14 +13,14 @@ export function Footer() {
             <h3 className="text-lg font-bold text-white">Mohammed Ali</h3>
             <p className="text-gray-400 text-sm">Software Engineer & AI Solutions Architect</p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
+              <a href="https://github.com/Pundit4Real" className="text-secondary hover:text-primary transition-colors">
                 <Github size={20} />
               </a>
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
+              <a href="https://www.linkedin.com/in/mohammed-ali7/" className="text-secondary hover:text-primary transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
-                <Twitter size={20} />
+              <a href="https://x.com/punditiTech" className="text-secondary hover:text-primary transition-colors">
+                <X size={20} />
               </a>
             </div>
           </div>
@@ -78,8 +78,8 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Get In Touch</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>Email: hello@mohammedali.dev</li>
-              <li>Based in: Lagos, Nigeria</li>
+              <li>Email: mohammedaalli088@gmail.com</li>
+              <li>Based in: Sunyani, Ghana</li>
               <li className="pt-2">
                 <span className="inline-block w-2 h-2 bg-accent rounded-full mr-2"></span>
                 Available for projects
