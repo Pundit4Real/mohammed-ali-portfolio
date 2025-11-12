@@ -57,21 +57,16 @@ export function Hero() {
               Hire Me
               <ArrowRight size={20} />
             </Link>
-            <a
-              href="/mohammed-ali-cv.pdf"
-              download="Mohammed-Ali-CV.pdf"
-              className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary/10 transition-all"
-            >
+            <button className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary/10 transition-all">
               Download CV
-          </a>
-
+            </button>
           </div>
         </div>
 
         {/* Right Image */}
         <div className="hidden lg:flex justify-center">
           <div className="w-80 h-80 rounded-full border-4 border-primary/50 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 relative">
-            <img src="/professional-headshot.jpeg" alt="Mohammed Ali" className="w-72 h-72 rounded-full object-cover" />
+            <img src="/professional-headshot.jpg" alt="Mohammed Ali" className="w-72 h-72 rounded-full object-cover" />
           </div>
         </div>
       </div>
