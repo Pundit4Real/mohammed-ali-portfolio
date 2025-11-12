@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import { Badge } from "@/components/ui/badge"
 
 export default function About() {
@@ -27,10 +28,10 @@ export default function About() {
   ]
 
   return (
-    <main>
+    <main className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="min-h-screen py-20 px-4">
+      <section className="flex-1 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">About Me</h1>
           <p className="text-xl text-secondary mb-16">Get to know the person behind the code.</p>
@@ -84,6 +85,8 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </main>
   )
 }
