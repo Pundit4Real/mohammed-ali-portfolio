@@ -58,7 +58,9 @@ export function Hero() {
               <ArrowRight size={20} />
             </Link>
           <a
-            href="/files/Mohammed-Ali-CV.pdf" // path to your CV file in the public folder
+            href="/files/Mohammed-Ali-Cv.pdf" // path to your CV file in the public folder
+            target="_blank"
+            rel="noopener noreferrer"
             download
             className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary/10 transition-all"
           >
