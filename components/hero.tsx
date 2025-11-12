@@ -57,9 +57,14 @@ export function Hero() {
               Hire Me
               <ArrowRight size={20} />
             </Link>
-            <button className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary/10 transition-all">
-              Download CV
-            </button>
+          <a
+            href="/files/Mohammed-Ali-CV.pdf" // path to your CV file in the public folder
+            download
+            className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary/10 transition-all"
+          >
+            Download CV
+          </a>
+
           </div>
         </div>
 
