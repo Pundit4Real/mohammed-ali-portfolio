@@ -14,7 +14,7 @@ export default function Testimonials() {
         "A brilliant engineer with strong AI intuition. Mohammed delivered exceptional results on our complex AI system. His ability to architect scalable solutions is unmatched.",
       person: "James Chen — Startup Founder",
       company: "TechFlow AI",
-      image: "/professional-headshot.jpg",
+      image: "/professional-headshot.png",
       rating: 5,
     },
     {
@@ -30,7 +30,7 @@ export default function Testimonials() {
         "His attention to system architecture is exceptional. A rare blend of technical skill and business acumen. Mohammed thinks not just about code, but about long-term scalability.",
       person: "Linda Johnson — CTO",
       company: "Digital Innovations Inc",
-      image: "/professional-headshot.jpg",
+      image: "/professional-headshot.png",
       rating: 5,
     },
     {
@@ -46,7 +46,7 @@ export default function Testimonials() {
         "Mohammed's expertise in AI and machine learning helped us transform our business processes. His insights and technical execution are top-tier. Highly professional.",
       person: "Sophia Williams — Operations Director",
       company: "Global Tech Corp",
-      image: "/professional-headshot.jpg",
+      image: "/professional-headshot.png",
       rating: 5,
     },
     {

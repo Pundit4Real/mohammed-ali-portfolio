@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer"
 import Link from "next/link"
 import { ChevronLeft, Github, ExternalLink, FileText, Folder } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { use } from "react"
 
 const projectsData = [
   {
@@ -133,8 +134,9 @@ const projectsData = [
   },
 ]
 
-export default function ProjectDetail({ params }: { params: { id: string } }) {
-  const project = projectsData.find((p) => p.id === params.id)
+export default function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = use(params) // unwrap the promise
+  const project = projectsData.find((p) => p.id === unwrappedParams.id)
 
   if (!project) {
     return (
@@ -280,26 +282,6 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
                 <Badge key={i} className="bg-primary/20 border border-primary/50 text-primary">
                   {tech}
                 </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* Project Files */}
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-white mb-4">Project Structure</h2>
-            <div className="space-y-2">
-              {project.files.map((file, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 p-3 hover:bg-primary/10 rounded-lg transition-colors cursor-pointer"
-                >
-                  {file.type === "folder" ? (
-                    <Folder size={20} className="text-secondary" />
-                  ) : (
-                    <FileText size={20} className="text-accent" />
-                  )}
-                  <span className="text-gray-400">{file.name}</span>
-                </div>
               ))}
             </div>
           </div>

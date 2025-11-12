@@ -1,10 +1,9 @@
 "use client"
 
 import type React from "react"
-
+import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { useState } from "react"
 import { Mail, Phone, Github, Youtube } from "lucide-react"
 
 export default function Contact() {
@@ -23,10 +22,10 @@ export default function Contact() {
   }
 
   const contactInfo = [
-    { label: "Email", value: "youremail@example.com", icon: Mail },
-    { label: "Phone", value: "+233 XXX XXX XXX", icon: Phone },
-    { label: "GitHub", value: "github.com/yourhandle", icon: Github },
-    { label: "YouTube", value: "@TalesHiveMedia", icon: Youtube },
+    { label: "Email", value: "mohammedaalli088@gmail.com", icon: Mail, href: "mailto:mohammedaalli088@gmail.com" },
+    { label: "Phone", value: "+233 59 819 3277", icon: Phone, href: "tel:+233598193277" },
+    { label: "GitHub", value: "github.com/pundit4real", icon: Github, href: "https://github.com/pundit4real" },
+    { label: "YouTube", value: "@pundittrading", icon: Youtube, href: "https://www.youtube.com/@pundittrading" },
   ]
 
   return (
@@ -44,20 +43,25 @@ export default function Contact() {
               <div className="space-y-4">
                 <h2 className="text-3xl font-bold text-white">Let's Talk</h2>
                 <p className="text-gray-400 leading-relaxed">
-                  Have an idea, project, or collaboration in mind? I'm open to freelance, full-time roles, or building
-                  custom systems.
+                  Have an idea, project, or collaboration in mind? I'm open to freelance, full-time roles, or building custom systems.
                 </p>
               </div>
 
               <div className="space-y-4">
-                {contactInfo.map(({ label, value, icon: Icon }, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <Icon className="w-6 h-6 text-primary flex-shrink-0" />
+                {contactInfo.map(({ label, value, icon: Icon, href }, index) => (
+                  <a
+                    key={index}
+                    href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="flex items-center gap-4 group hover:text-primary transition-colors"
+                  >
+                    <Icon className="w-6 h-6 text-primary flex-shrink-0 group-hover:animate-pulse" />
                     <div>
                       <p className="text-sm text-gray-500">{label}</p>
-                      <p className="text-foreground font-medium">{value}</p>
+                      <p className="font-medium text-foreground group-hover:text-primary ">{value}</p>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
@@ -65,7 +69,7 @@ export default function Contact() {
             {/* Right - Contact Form */}
             <div className="bg-card border border-border rounded-lg p-8">
               {submitted && (
-                <div className="mb-6 p-4 bg-accent/10 border border-accent rounded-lg text-accent">
+                <div className="mb-6 p-4 bg-accent/10 border border-accent rounded-lg text-accent animate-fade-in">
                   Thank you! Your message has been sent successfully.
                 </div>
               )}
@@ -79,8 +83,8 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary"
                     placeholder="John Doe"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -92,8 +96,8 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary"
                     placeholder="john@example.com"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -105,8 +109,8 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary resize-none"
                     placeholder="Tell me about your project..."
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground placeholder-gray-600 focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
