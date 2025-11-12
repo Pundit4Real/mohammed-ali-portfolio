@@ -10,23 +10,14 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Mohammed Ali — Software Engineer & AI Solutions Architect",
   description: "AI systems, full-stack engineering, mobile development, and blockchain solutions.",
-  generator: "v0.app",
+  // generator: "v0.app",
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/app-icon.png",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/app-icon.png",
   },
 }
 

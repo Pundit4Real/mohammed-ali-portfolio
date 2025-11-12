@@ -66,7 +66,7 @@ export function Hero() {
         {/* Right Image */}
         <div className="hidden lg:flex justify-center">
           <div className="w-80 h-80 rounded-full border-4 border-primary/50 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 relative">
-            <img src="/professional-headshot.png" alt="Mohammed Ali" className="w-72 h-72 rounded-full object-cover" />
+            <img src="/professional-headshot.jpeg" alt="Mohammed Ali" className="w-72 h-72 rounded-full object-cover" />
           </div>
         </div>
       </div>
