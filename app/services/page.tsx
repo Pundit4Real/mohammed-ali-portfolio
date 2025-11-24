@@ -1,53 +1,75 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { Cpu, Code, Smartphone, Shield, Cloud, Cog } from "lucide-react"
-import Link from "next/link"
+"use client";
+
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { Cpu, Code, Smartphone, Shield, Cloud, Cog, ChartCandlestick } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import apiClient from "@/utils/apiClient";
+
+type ServicesHeaderProps = {
+  headline: string;
+  subheadline: string;
+};
+
+type ServicesContentProps = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  icon?: string;
+  price?: string;
+  highlight?: boolean;
+  is_active?: boolean;
+};
+
+type ServicesDataProps = {
+  hero: ServicesHeaderProps;
+  data: ServicesContentProps[];
+};
+
+// Map backend icon slugs to local icons
+const iconMap: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
+  "ai-models-development": Cpu,
+  "web-development": Code,
+  "mobile-apps-development": Smartphone,
+  "blockchain-development": Shield,
+  "cloud-development": Cloud,
+  "automation-tools": Cog,
+  "ai-models-systems-development": Cog,
+  "crypto-forex-trading-mentor": ChartCandlestick,
+};
 
 export default function Services() {
-  const services = [
-    {
-      id: "ai-model-development",
-      icon: Cpu,
-      title: "AI Model Development",
-      description: "Custom AI systems, NLP, chatbots, and automation pipelines tailored to your business needs.",
-      detail: "We build, train, and deploy AI solutions including natural language processing, intelligent chatbots, and workflow automation to optimize operations and enhance user experiences.",
-    },
-    {
-      id: "web-development",
-      icon: Code,
-      title: "Web Development",
-      description: "Django & FastAPI apps, dashboards, APIs, and analytics platforms.",
-      detail: "Full-stack web development services creating scalable backend systems, interactive dashboards, and powerful APIs with modern frameworks like Django, FastAPI, and React.",
-    },
-    {
-      id: "mobile-apps",
-      icon: Smartphone,
-      title: "Mobile Apps",
-      description: "High-quality Flutter apps with clean UI/UX.",
-      detail: "Cross-platform mobile applications built with Flutter, focusing on smooth performance, intuitive design, and seamless user experience for iOS and Android.",
-    },
-    {
-      id: "blockchain-development",
-      icon: Shield,
-      title: "Blockchain Development",
-      description: "Smart contracts, DID systems, decentralized applications.",
-      detail: "Secure and decentralized solutions using blockchain technology, including smart contracts, decentralized identity (DID) systems, and Web3 integrations.",
-    },
-    {
-      id: "cloud-deployment",
-      icon: Cloud,
-      title: "Cloud Deployment",
-      description: "Docker, CI/CD, AWS hosting, and scalable backends.",
-      detail: "End-to-end cloud solutions with containerization, CI/CD pipelines, AWS deployment, and scalable backend architectures to ensure reliability and performance.",
-    },
-    {
-      id: "automation-tools",
-      icon: Cog,
-      title: "Automation Tools",
-      description: "Bots, scrapers, workflow automation, and integrations.",
-      detail: "Custom automation scripts, scrapers, and integration tools designed to streamline repetitive tasks and boost productivity across platforms.",
-    },
-  ]
+  const [servicesContent, setServicesContent] = useState<ServicesDataProps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await apiClient.get("/services/?is_active=true");
+
+        // Filter active services
+        const activeServices: ServicesContentProps[] = response.data.data.filter(
+          (service: ServicesContentProps) => service.is_active === true
+        );
+
+        setServicesContent({
+          hero: response.data.hero,
+          data: activeServices,
+        });
+      } catch (err: any) {
+        console.error("Failed to load services:", err);
+        setError("Failed to load services. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -55,31 +77,43 @@ export default function Services() {
 
       <section className="flex-1 py-20 px-4 bg-gradient-to-b from-background to-background/90">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Services</h1>
-          <p className="text-xl text-secondary mb-16">
-            I help businesses deploy high-performance digital solutions with AI, web, mobile, and automation technologies.
-          </p>
+          {loading && <p className="text-white text-xl">Loading services...</p>}
+          {error && <p className="text-red-500 text-xl">{error}</p>}
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => {
-              const Icon = service.icon
-              return (
-                <Link
-                  key={service.id}
-                  href={`/services/${service.id}`} // optional: detail page for each service
-                  className="group bg-card border border-border rounded-lg p-8 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
-                >
-                  <Icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">{service.title}</h3>
-                  <p className="text-gray-400">{service.description}</p>
-                </Link>
-              )
-            })}
-          </div>
+          {!loading && !error && servicesContent && (
+            <>
+              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+                {servicesContent.hero.headline}
+              </h1>
+              <p className="text-xl text-secondary mb-16">
+                {servicesContent.hero.subheadline}
+              </p>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {servicesContent.data.map((service) => {
+                  const Icon = iconMap[service.slug] || Code;
+
+                  return (
+                    <Link
+                      key={service.id}
+                      href={`/services/${service.id}`}
+                      className="group bg-card border border-border rounded-lg p-8 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/20 cursor-pointer"
+                    >
+                      <Icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-400">{service.description}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </section>
 
       <Footer />
     </main>
-  )
+  );
 }

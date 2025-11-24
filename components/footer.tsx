@@ -1,8 +1,45 @@
+"use client"
+
 import Link from "next/link"
-import { Github, Linkedin, Twitter } from "lucide-react"
+import { Github, Linkedin, X, Send, Mail } from "lucide-react"
+import apiClient from "@/utils/apiClient";
+import { useEffect, useState } from "react";
+
+type contactInfoContentProps = {
+  id: number;
+  headline: string;
+  subheadline: string;
+  address: string;
+  email: string;
+  phone: string;
+  github: string;
+  linkedin: string;
+  twitter: string;
+  telegram: string;
+};
+
+type ContactDataProps = {
+  data: contactInfoContentProps[];
+};
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+
+
+  const [contactinfoContent, setContactinfoContent] =
+    useState<ContactDataProps | null>(null);
+
+    useEffect(() => {
+      const contactinfoData = async () => {
+        try {
+          const response = await apiClient.get("/contact-info/");
+          setContactinfoContent(response.data);
+        } catch (error) {
+          console.error("Failed to load contact info:", error);
+        }
+      };
+      contactinfoData();
+    }, []);
 
   return (
     <footer className="border-t border-border bg-background/50 backdrop-blur-sm">
@@ -13,14 +50,14 @@ export function Footer() {
             <h3 className="text-lg font-bold text-white">Mohammed Ali</h3>
             <p className="text-gray-400 text-sm">Software Engineer & AI Solutions Architect</p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
+              <a href={contactinfoContent?.data[0].github} className="text-secondary hover:text-primary transition-colors">
                 <Github size={20} />
               </a>
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
+              <a href={contactinfoContent?.data[0].linkedin} className="text-secondary hover:text-primary transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-secondary hover:text-primary transition-colors">
-                <Twitter size={20} />
+              <a href={contactinfoContent?.data[0].twitter} className="text-secondary hover:text-primary transition-colors">
+                <X size={20} />
               </a>
             </div>
           </div>
@@ -77,9 +114,22 @@ export function Footer() {
           {/* Contact Info */}
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Get In Touch</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>Email: hello@mohammedali.dev</li>
-              <li>Based in: Lagos, Nigeria</li>
+            <ul className="space-y-3 text-sm text-gray-400">
+              <li className="flex items-center gap-4">
+                <a
+                  href={contactinfoContent?.data[0].telegram}
+                  className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1"
+                >
+                  <Send size={20} />
+                </a>
+                <a
+                  href={`mailto:${contactinfoContent?.data[0].email}`}
+                  className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1"
+                >
+                  <Mail size={20} />
+                </a>
+              </li>
+              <li>{contactinfoContent?.data[0].address}</li>
               <li className="pt-2">
                 <span className="inline-block w-2 h-2 bg-accent rounded-full mr-2"></span>
                 Available for projects
