@@ -1,11 +1,39 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
+import apiClient from "@/utils/apiClient"
+
+type HomeDataProps = {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  keywords: string[];
+  profile_image: string;
+  resume: string;
+}
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [homeContent, setHomeContent] = useState<HomeDataProps[]>([])
+  
+
+  useEffect(() => {
+      const homeData = async () => {
+        try {
+          const response = await apiClient.get("/home/")
+          setHomeContent(response.data)
+          console.log("home data", response)
+        } catch (error) {
+          console.error("Failed to load home:", error)
+        }
+      }
+      homeData()
+    }, [])
+
+  const homeData = homeContent[0]
 
   const links = [
     { label: "Home", href: "/" },
@@ -24,7 +52,7 @@ export function Navbar() {
           href="/"
           className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
         >
-          Mohammed Ali
+          {homeData?.name}
         </Link>
 
         {/* Desktop Menu */}

@@ -5,6 +5,16 @@ import { Github, Linkedin, X, Send, Mail } from "lucide-react"
 import apiClient from "@/utils/apiClient";
 import { useEffect, useState } from "react";
 
+type HomeDataProps = {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  keywords: string[];
+  profile_image: string;
+  resume: string;
+}
+
 type contactInfoContentProps = {
   id: number;
   headline: string;
@@ -25,11 +35,11 @@ type ContactDataProps = {
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
+  const [homeContent, setHomeContent] = useState<HomeDataProps[]>([])
 
-  const [contactinfoContent, setContactinfoContent] =
-    useState<ContactDataProps | null>(null);
+  const [contactinfoContent, setContactinfoContent] = useState<ContactDataProps | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
       const contactinfoData = async () => {
         try {
           const response = await apiClient.get("/contact-info/");
@@ -39,7 +49,22 @@ export function Footer() {
         }
       };
       contactinfoData();
-    }, []);
+  }, []);
+
+  useEffect(() => {
+      const homeData = async () => {
+        try {
+          const response = await apiClient.get("/home/")
+          setHomeContent(response.data)
+          console.log("home data", response)
+        } catch (error) {
+          console.error("Failed to load home:", error)
+        }
+      }
+      homeData()
+    }, [])
+
+  const homeData = homeContent[0]
 
   return (
     <footer className="border-t border-border bg-background/50 backdrop-blur-sm">
@@ -47,8 +72,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-white">Mohammed Ali</h3>
-            <p className="text-gray-400 text-sm">Software Engineer & AI Solutions Architect</p>
+            <h3 className="text-lg font-bold text-white">{homeData?.name}</h3>
+            <p className="text-gray-400 text-sm">{homeData?.title}</p>
             <div className="flex gap-4 pt-2">
               <a href={contactinfoContent?.data[0].github} className="text-secondary hover:text-primary transition-colors">
                 <Github size={20} />
@@ -141,7 +166,7 @@ export function Footer() {
         {/* Divider */}
         <div className="border-t border-border pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-            <p>&copy; {currentYear} Mohammed Ali. All rights reserved.</p>
+            <p>&copy; {currentYear} {homeData?.name}. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <Link href="#" className="hover:text-primary transition-colors">
                 Privacy Policy
