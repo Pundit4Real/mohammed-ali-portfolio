@@ -21,17 +21,16 @@ export function Hero() {
   const [homeContent, setHomeContent] = useState<HomeDataProps[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Rotate backend keywords
   useEffect(() => {
     const interval = setInterval(() => {
       const keywords = homeContent[0]?.keywords || [];
-      if (keywords.length > 0) setRotatingText((prev) => (prev + 1) % keywords.length);
+      if (keywords.length > 0)
+        setRotatingText((prev) => (prev + 1) % keywords.length);
     }, 3000);
 
     return () => clearInterval(interval);
   }, [homeContent]);
 
-  // Load Home Data
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
@@ -43,6 +42,7 @@ export function Hero() {
         setLoading(false);
       }
     };
+
     fetchHomeData();
   }, []);
 
@@ -52,26 +52,40 @@ export function Hero() {
 
   return (
     <section className="max-w-7xl mx-auto px-4 min-h-[90vh] flex items-center justify-center relative overflow-hidden pt-16 pb-16">
-      {/* Animated Background */}
+      {/* Background animation */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary rounded-full blur-3xl animate-float" />
-        <div className="absolute top-40 right-20 w-72 h-72 bg-secondary rounded-full blur-3xl animate-float" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+        <div
+          className="absolute top-40 right-20 w-72 h-72 bg-secondary rounded-full blur-3xl animate-float"
+          style={{ animationDelay: "1s" }}
+        />
+        <div
+          className="absolute bottom-20 left-1/2 w-72 h-72 bg-accent rounded-full blur-3xl animate-float"
+          style={{ animationDelay: "2s" }}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left Content */}
+        {/* Left side */}
         <div className="space-y-8">
           <div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight">{homeData?.name}</h1>
-            <p className="text-xl md:text-2xl text-secondary mb-2">{homeData?.title}</p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight">
+              {homeData?.name}
+            </h1>
+            <p className="text-xl md:text-2xl text-secondary mb-2">
+              {homeData?.title}
+            </p>
           </div>
 
-          <p className="text-lg text-gray-400 leading-relaxed max-w-xl">{homeData?.description}</p>
+          <p className="text-lg text-gray-400 leading-relaxed max-w-xl">
+            {homeData?.description}
+          </p>
 
           {/* Rotating Keyword */}
           <div className="h-16 flex items-center">
-            <span className="text-2xl md:text-3xl text-accent font-semibold">{homeData?.keywords?.[rotatingText]}</span>
+            <span className="text-2xl md:text-3xl text-accent font-semibold">
+              {homeData?.keywords?.[rotatingText]}
+            </span>
           </div>
 
           {/* Buttons */}
@@ -96,8 +110,8 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Right Image */}
-        <div className="hidden lg:flex justify-center">
+        {/* Image */}
+        <div className="lg:flex justify-center">
           <div className="w-80 h-80 rounded-full border-4 border-primary/50 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 relative">
             <img
               src={homeData?.profile_image}

@@ -41,47 +41,62 @@ export default function Testimonials() {
     <main className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="flex-1 py-20 px-4">
-        <div className="max-w-7xl mx-auto">
+      <section className="flex-1 py-16 px-4 sm:px-6 md:px-8">
+        <div className="max-w-5xl mx-auto">
           {loading ? (
             <SkeletonTestimonialCard />
           ) : testimonialsContent ? (
             <>
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+              {/* Header */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center mb-4">
                 {testimonialsContent.hero.headline}
               </h1>
-              <p className="text-xl text-secondary mb-16">{testimonialsContent.hero.subheadline}</p>
+              <p className="text-lg md:text-xl text-secondary text-center mb-12">
+                {testimonialsContent.hero.subheadline}
+              </p>
 
-              <div className="bg-card border border-border rounded-lg p-12 space-y-8">
-                {/* Star Rating */}
-                <div className="flex gap-1">
+              {/* Testimonial Card */}
+              <div className="bg-card border border-border rounded-lg p-6 sm:p-8 md:p-10 space-y-6 sm:space-y-8">
+                
+                {/* Stars */}
+                <div className="flex justify-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => {
                     const isFilled = i < (testimonialsContent.data?.[current]?.rating ?? 0);
                     return (
-                      <Star key={i} size={20} className={isFilled ? "fill-accent text-accent" : "text-accent/30"} />
+                      <Star
+                        key={i}
+                        size={20}
+                        className={isFilled ? "fill-accent text-accent" : "text-accent/30"}
+                      />
                     );
                   })}
                 </div>
 
-                <blockquote className="text-2xl font-light italic text-gray-300">
+                {/* Feedback */}
+                <blockquote className="text-xl sm:text-2xl font-light italic text-gray-300 text-center leading-relaxed">
                   "{testimonialsContent.data[current].feedback}"
                 </blockquote>
 
-                <div className="flex items-center justify-between pt-8 border-t border-border">
+                {/* Footer */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-border">
+                  
+                  {/* Profile */}
                   <div className="flex items-center gap-4">
                     <img
                       src={testimonialsContent.data[current].image || "/placeholder.svg"}
                       alt={testimonialsContent.data[current].name || "Client Photo"}
-                      className="w-16 h-16 rounded-full border border-border"
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-border object-cover"
                     />
                     <div>
-                      <p className="font-semibold text-white">
-                        {testimonialsContent.data[current].name} - {testimonialsContent.data[current].role}
+                      <p className="font-semibold text-white text-center sm:text-left">
+                        {testimonialsContent.data[current].name}  
+                        <span className="text-gray-400 font-light"> — {testimonialsContent.data[current].role}</span>
                       </p>
                       <p className="text-sm text-gray-400">{testimonialsContent.data[current].company}</p>
                     </div>
                   </div>
 
+                  {/* Arrows */}
                   <div className="flex gap-4">
                     <button
                       onClick={prev}
@@ -100,31 +115,36 @@ export default function Testimonials() {
               </div>
 
               {/* Dots */}
-              <div className="flex justify-center gap-2 mt-8">
+              <div className="flex justify-center gap-2 mt-6">
                 {testimonialsContent.data.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrent(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${index === current ? "bg-primary w-8" : "bg-gray-600"}`}
+                    className={`h-2 rounded-full transition-all ${
+                      index === current ? "bg-primary w-6" : "bg-gray-600 w-2"
+                    }`}
                   />
                 ))}
               </div>
 
-              {/* Stats Section */}
-              <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center p-8 bg-primary/5 rounded-lg border border-border">
-                  <div className="text-4xl font-bold text-primary mb-2">{testimonialsContent.stats.happy_clients}</div>
-                  <p className="text-gray-400">Happy Clients</p>
+              {/* Stats */}
+              <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="text-center p-6 bg-primary/5 rounded-lg border border-border">
+                  <div className="text-3xl md:text-4xl font-bold text-primary">{testimonialsContent.stats.happy_clients}</div>
+                  <p className="text-gray-400 mt-1">Happy Clients</p>
                 </div>
-                <div className="text-center p-8 bg-secondary/5 rounded-lg border border-border">
-                  <div className="text-4xl font-bold text-secondary mb-2">{testimonialsContent.stats.average_rating}</div>
-                  <p className="text-gray-400">Average Rating</p>
+
+                <div className="text-center p-6 bg-secondary/5 rounded-lg border border-border">
+                  <div className="text-3xl md:text-4xl font-bold text-secondary">{testimonialsContent.stats.average_rating}</div>
+                  <p className="text-gray-400 mt-1">Average Rating</p>
                 </div>
-                <div className="text-center p-8 bg-accent/5 rounded-lg border border-border">
-                  <div className="text-4xl font-bold text-accent mb-2">{testimonialsContent.stats.satisfaction_rate}</div>
-                  <p className="text-gray-400">Satisfaction Rate</p>
+
+                <div className="text-center p-6 bg-accent/5 rounded-lg border border-border">
+                  <div className="text-3xl md:text-4xl font-bold text-accent">{testimonialsContent.stats.satisfaction_rate}</div>
+                  <p className="text-gray-400 mt-1">Satisfaction Rate</p>
                 </div>
               </div>
+
             </>
           ) : (
             <p className="text-red-500">Failed to load testimonials.</p>

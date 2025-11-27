@@ -18,7 +18,6 @@ type ServicesDataProps = {
   data: ServicesContentProps[];
 };
 
-// Map backend icon strings or service slugs to local icons
 const iconMap: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
   "web-development": Code,
   "mobile-apps-development": Smartphone,
@@ -34,12 +33,12 @@ export function Features() {
     const fetchHighlightedServices = async () => {
       try {
         const response = await apiClient.get("/services/?highlight=true");
-        // Make sure we filter on the frontend too, in case backend returns all
-        const highlightedServices = response.data.data.filter(
+
+        const highlighted = response.data.data.filter(
           (service: ServicesContentProps) => service.highlight === true
         );
-        setServicesContent({ ...response.data, data: highlightedServices });
-        console.log("Highlighted services:", highlightedServices);
+
+        setServicesContent({ ...response.data, data: highlighted });
       } catch (error) {
         console.error("Failed to load highlighted services:", error);
       }
@@ -52,9 +51,11 @@ export function Features() {
     <section className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-white text-center mb-16">What I Do</h2>
+
         <div className="grid md:grid-cols-3 gap-8">
           {servicesContent?.data.map((service) => {
             const Icon = iconMap[service.slug] || Code;
+
             return (
               <div
                 key={service.id}

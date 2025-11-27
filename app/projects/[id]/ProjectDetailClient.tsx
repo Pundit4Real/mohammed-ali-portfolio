@@ -54,17 +54,17 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
     fetchProject()
   }, [projectId])
 
-    if (loading) {
-        return (
-            <main className="min-h-screen flex flex-col">
-            <Navbar />
-            <section className="flex-1 py-20 px-4">
-                <SkeletonGrid />
-            </section>
-            <Footer />
-            </main>
-        )
-    }
+  if (loading) {
+    return (
+      <main className="min-h-screen flex flex-col">
+        <Navbar />
+        <section className="flex-1 py-20 px-4">
+          <SkeletonGrid />
+        </section>
+        <Footer />
+      </main>
+    )
+  }
 
   if (!project) {
     return (
@@ -103,8 +103,8 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
 
           {/* Project Header */}
           <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-border rounded-lg p-8 mb-8">
-            <h1 className="text-5xl font-bold text-white mb-4">{project.title}</h1>
-            <p className="text-xl text-secondary mb-6">{project.subtitle}</p>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">{project.title}</h1>
+            <p className="text-lg sm:text-xl text-secondary mb-6">{project.subtitle}</p>
 
             <div className="flex flex-wrap gap-2">
               {project.category?.map((cat, i) => (
@@ -120,17 +120,37 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
           </div>
 
           {/* Main Project Image */}
-          <div className="rounded-lg overflow-hidden border border-border mb-4 h-96 bg-gradient-to-br from-primary/20 to-secondary/20">
+          <div className="rounded-lg overflow-hidden border border-border mb-4 w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] bg-gradient-to-br from-primary/20 to-secondary/20">
             <img
               src={mainImage || "/placeholder.svg"}
               alt={project.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center transition-transform duration-300 ease-in-out"
             />
           </div>
-
+          
           {/* Image Thumbnails Carousel */}
           {project.images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto mb-8">
+            <div
+              className="flex gap-2 overflow-x-auto mb-8 scrollbar-hide"
+              onTouchStart={(e) => {
+                const touchStartX = e.touches[0].clientX
+                let scrollLeft = (e.currentTarget as HTMLDivElement).scrollLeft
+
+                const onTouchMove = (moveEvent: TouchEvent) => {
+                  const touchMoveX = moveEvent.touches[0].clientX
+                  const delta = touchStartX - touchMoveX
+                  ;(e.currentTarget as HTMLDivElement).scrollLeft = scrollLeft + delta
+                }
+
+                const onTouchEnd = () => {
+                  document.removeEventListener("touchmove", onTouchMove)
+                  document.removeEventListener("touchend", onTouchEnd)
+                }
+
+                document.addEventListener("touchmove", onTouchMove)
+                document.addEventListener("touchend", onTouchEnd)
+              }}
+            >
               {project.images.map((img) => (
                 <img
                   key={img.id}
@@ -140,7 +160,7 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
                     setMainImage(img.image)
                     setActiveImageId(img.id)
                   }}
-                  className={`w-40 h-24 object-cover rounded-lg border cursor-pointer hover:scale-105 transition-transform
+                  className={`flex-shrink-0 w-24 sm:w-32 h-16 sm:h-20 object-cover rounded-lg border cursor-pointer hover:scale-105 transition-transform
                     ${
                       activeImageId === img.id
                         ? "border-primary/70 ring-2 ring-primary/40"
@@ -152,7 +172,7 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
           )}
 
           {/* Content Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Full Description */}
             <div className="md:col-span-2">
               <div className="bg-card border border-border rounded-lg p-6">

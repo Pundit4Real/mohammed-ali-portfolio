@@ -1,58 +1,125 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Mail, Linkedin, X, Send, MessageCircle } from "lucide-react";
 import apiClient from "@/utils/apiClient";
 import SkeletonContactCard from "@/components/ui/SkeletonContactCard";
+import { useSearchParams } from "next/navigation";
 
 type ContactHeaderProps = { headline: string; subheadline: string };
 
 type ContactInfoProps = {
-  id: number;
-  headline: string;
-  subheadline: string;
-  address: string;
-  email: string;
-  phone: string;
-  github: string;
-  linkedin: string;
-  twitter: string;
-  telegram: string;
+  id: string;
+  headline?: string;
+  subheadline?: string;
+  email?: string;
+  phone?: string;
+  linkedin?: string;
+  twitter?: string;
+  telegram?: string;
 };
 
-type ContactDataProps = { hero: ContactHeaderProps; data: ContactInfoProps[] };
+type ServicesContentProps = {
+  id: string;
+  title: string;
+  slug: string;
+  is_active: boolean;
+};
+
+type ContactDataProps = {
+  hero: ContactHeaderProps;
+  data: ContactInfoProps[];
+};
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+
+  const searchParams = useSearchParams();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    service: searchParams.get("service") || "",
+  });
+
+  const [bannerMessage, setBannerMessage] = useState<string | null>(null);
+  const [loadingForm, setLoadingForm] = useState(false);
   const [contactContent, setContactContent] = useState<ContactDataProps | null>(null);
+  const [services, setServices] = useState<ServicesContentProps[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Ref to scroll to top of section (below header)
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  // Fetch contact info + active services
   useEffect(() => {
-    const fetchContactInfo = async () => {
+    const fetchData = async () => {
       try {
-        const response = await apiClient.get("/contact-info/");
-        setContactContent(response.data);
-      } catch (error) {
-        console.error("Failed to load contact info:", error);
+        setLoading(true);
+
+        const contactResponse = await apiClient.get("/contact-info/");
+        setContactContent(contactResponse.data);
+
+        const servicesResponse = await apiClient.get("/services/?is_active=true");
+        const activeServices: ServicesContentProps[] = servicesResponse.data.data.filter(
+          (s: ServicesContentProps) => s.is_active
+        );
+        setServices(activeServices);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setBannerMessage("Failed to load contact info. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-    fetchContactInfo();
+
+    fetchData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const showBanner = (message: string) => {
+    setBannerMessage(message);
+    setTimeout(() => setBannerMessage(null), 3000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: "", email: "", message: "" });
-    setTimeout(() => setSubmitted(false), 3000);
+    setLoadingForm(true);
+    try {
+      await apiClient.post("/contact-messages/", {
+        service: formData.service,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        views: 0,
+        is_active: true,
+        responded: false,
+        response_message: "",
+      });
+
+      setFormData({ name: "", email: "", message: "", service: "" });
+
+      // Scroll up to hero section before showing banner
+      heroRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Wait a tiny bit to ensure scrolling starts before showing banner
+      setTimeout(() => showBanner("Thank you! Your message has been sent."), 500);
+    } catch (err: any) {
+      console.error("Failed to send message:", err);
+
+      // Scroll up as well on error
+      heroRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => showBanner("Something went wrong. Please try again."), 500);
+    } finally {
+      setLoadingForm(false);
+    }
   };
 
   const backend = contactContent?.data?.[0];
@@ -66,7 +133,7 @@ export default function Contact() {
   ];
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative">
       <Navbar />
 
       <section className="flex-1 py-20 px-4">
@@ -75,8 +142,8 @@ export default function Contact() {
             <SkeletonContactCard />
           ) : contactContent ? (
             <>
-              {/* Page Header */}
-              <div className="text-center mb-16">
+              {/* Hero / headline section ref */}
+              <div ref={heroRef} className="text-center mb-16">
                 <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
                   {contactContent.hero.headline}
                 </h1>
@@ -84,7 +151,6 @@ export default function Contact() {
               </div>
 
               <div className="grid lg:grid-cols-2 gap-16">
-                {/* Left: Contact Info */}
                 <div className="space-y-8">
                   <div className="space-y-4">
                     <h2 className="text-3xl font-bold text-white">{backend?.headline}</h2>
@@ -107,11 +173,11 @@ export default function Contact() {
                   ))}
                 </div>
 
-                {/* Right: Contact Form */}
                 <div className="bg-card border border-border rounded-lg p-8">
-                  {submitted && (
-                    <div className="mb-6 p-4 bg-accent/10 border border-accent rounded-lg text-accent animate-fade-in">
-                      Thank you! Your message has been sent.
+                  {/* Banner above form */}
+                  {bannerMessage && (
+                    <div className="mb-4 p-4 bg-accent/10 border border-accent text-accent rounded-lg text-center animate-slideDown">
+                      {bannerMessage}
                     </div>
                   )}
 
@@ -143,6 +209,24 @@ export default function Contact() {
                     </div>
 
                     <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Select Service</label>
+                      <select
+                        name="service"
+                        value={formData.service}
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 text-foreground"
+                      >
+                        <option value="">Choose a service...</option>
+                        {services.map((service) => (
+                          <option key={service.id} value={service.id}>
+                            {service.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Message</label>
                       <textarea
                         name="message"
@@ -157,9 +241,23 @@ export default function Contact() {
 
                     <button
                       type="submit"
-                      className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-primary/80 transition-all"
+                      disabled={loadingForm}
+                      className={`w-full bg-primary text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center ${
+                        loadingForm ? "opacity-70 cursor-not-allowed" : "hover:bg-primary/80"
+                      }`}
                     >
-                      Send Message
+                      {loadingForm ? (
+                        <svg
+                          className="animate-spin h-5 w-5 text-white mr-2"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+                      ) : null}
+                      {loadingForm ? "Sending..." : "Send Message"}
                     </button>
                   </form>
                 </div>

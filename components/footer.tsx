@@ -13,7 +13,7 @@ type HomeDataProps = {
   keywords: string[];
   profile_image: string;
   resume: string;
-}
+};
 
 type contactInfoContentProps = {
   id: number;
@@ -33,55 +33,56 @@ type ContactDataProps = {
 };
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
-  const [homeContent, setHomeContent] = useState<HomeDataProps[]>([])
-
+  const [homeContent, setHomeContent] = useState<HomeDataProps[]>([]);
   const [contactinfoContent, setContactinfoContent] = useState<ContactDataProps | null>(null);
 
   useEffect(() => {
-      const contactinfoData = async () => {
-        try {
-          const response = await apiClient.get("/contact-info/");
-          setContactinfoContent(response.data);
-        } catch (error) {
-          console.error("Failed to load contact info:", error);
-        }
-      };
-      contactinfoData();
+    const contactinfoData = async () => {
+      try {
+        const response = await apiClient.get("/contact-info/");
+        setContactinfoContent(response.data);
+      } catch (error) {
+        console.error("Failed to load contact info:", error);
+      }
+    };
+    contactinfoData();
   }, []);
 
   useEffect(() => {
-      const homeData = async () => {
-        try {
-          const response = await apiClient.get("/home/")
-          setHomeContent(response.data)
-          console.log("home data", response)
-        } catch (error) {
-          console.error("Failed to load home:", error)
-        }
+    const homeData = async () => {
+      try {
+        const response = await apiClient.get("/home/");
+        setHomeContent(response.data);
+      } catch (error) {
+        console.error("Failed to load home:", error);
       }
-      homeData()
-    }, [])
+    };
+    homeData();
+  }, []);
 
-  const homeData = homeContent[0]
+  const homeData = homeContent[0];
+  const contact = contactinfoContent?.data?.[0];
 
   return (
     <footer className="border-t border-border bg-background/50 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-4 py-12">
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white">{homeData?.name}</h3>
             <p className="text-gray-400 text-sm">{homeData?.title}</p>
+
             <div className="flex gap-4 pt-2">
-              <a href={contactinfoContent?.data[0].github} className="text-secondary hover:text-primary transition-colors">
+              <a href={contact?.github} className="text-secondary hover:text-primary transition-colors">
                 <Github size={20} />
               </a>
-              <a href={contactinfoContent?.data[0].linkedin} className="text-secondary hover:text-primary transition-colors">
+              <a href={contact?.linkedin} className="text-secondary hover:text-primary transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href={contactinfoContent?.data[0].twitter} className="text-secondary hover:text-primary transition-colors">
+              <a href={contact?.twitter} className="text-secondary hover:text-primary transition-colors">
                 <X size={20} />
               </a>
             </div>
@@ -91,48 +92,20 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Navigation</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/" className="text-gray-400 hover:text-primary transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-400 hover:text-primary transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/projects" className="text-gray-400 hover:text-primary transition-colors">
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link href="/services" className="text-gray-400 hover:text-primary transition-colors">
-                  Services
-                </Link>
-              </li>
+              <li><Link href="/" className="text-gray-400 hover:text-primary transition-colors">Home</Link></li>
+              <li><Link href="/about" className="text-gray-400 hover:text-primary transition-colors">About</Link></li>
+              <li><Link href="/projects" className="text-gray-400 hover:text-primary transition-colors">Projects</Link></li>
+              <li><Link href="/services" className="text-gray-400 hover:text-primary transition-colors">Services</Link></li>
             </ul>
           </div>
 
-          {/* More Links */}
+          {/* More */}
           <div className="space-y-4">
             <h4 className="font-semibold text-white">More</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/experience" className="text-gray-400 hover:text-primary transition-colors">
-                  Experience
-                </Link>
-              </li>
-              <li>
-                <Link href="/testimonials" className="text-gray-400 hover:text-primary transition-colors">
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-primary transition-colors">
-                  Contact
-                </Link>
-              </li>
+              <li><Link href="/experience" className="text-gray-400 hover:text-primary transition-colors">Experience</Link></li>
+              <li><Link href="/testimonials" className="text-gray-400 hover:text-primary transition-colors">Testimonials</Link></li>
+              <li><Link href="/contact" className="text-gray-400 hover:text-primary transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -141,20 +114,16 @@ export function Footer() {
             <h4 className="font-semibold text-white">Get In Touch</h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-center gap-4">
-                <a
-                  href={contactinfoContent?.data[0].telegram}
-                  className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1"
-                >
+                <a href={contact?.telegram} className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1">
                   <Send size={20} />
                 </a>
-                <a
-                  href={`mailto:${contactinfoContent?.data[0].email}`}
-                  className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1"
-                >
+                <a href={`mailto:${contact?.email}`} className="text-secondary hover:text-primary transition-colors inline-flex items-center gap-1">
                   <Mail size={20} />
                 </a>
               </li>
-              <li>{contactinfoContent?.data[0].address}</li>
+
+              <li>{contact?.address}</li>
+
               <li className="pt-2">
                 <span className="inline-block w-2 h-2 bg-accent rounded-full mr-2"></span>
                 Available for projects
@@ -167,17 +136,15 @@ export function Footer() {
         <div className="border-t border-border pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
             <p>&copy; {currentYear} {homeData?.name}. All rights reserved.</p>
+
             <div className="flex gap-6 mt-4 md:mt-0">
-              <Link href="#" className="hover:text-primary transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="#" className="hover:text-primary transition-colors">
-                Terms of Service
-              </Link>
+              <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>
+
       </div>
     </footer>
-  )
+  );
 }
