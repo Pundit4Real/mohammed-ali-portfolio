@@ -1,12 +1,11 @@
-// app/projects/ProjectsClient.tsx (Client Component)
-"use client";
+"use client"; // MUST be the first line
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import apiClient from "@/utils/apiClient";
 import SkeletonProjectCard from "@/components/ui/SkeletonProjectCard";
-import { useSearchParams } from "next/navigation";
 
 type ProjectHeaderProps = {
   headline: string;
@@ -34,7 +33,6 @@ type ProjectDataProps = {
 
 export default function ProjectsClient() {
   const searchParams = useSearchParams();
-
   const categoryId = searchParams.get("categories");
   const categoryName = searchParams.get("category_name");
   const categoryContains = searchParams.get("category_name_icontains");
@@ -48,12 +46,10 @@ export default function ProjectsClient() {
       try {
         let url = "/projects/";
         const query: string[] = [];
-
         if (categoryId) query.push(`categories=${categoryId}`);
         if (categoryName) query.push(`category_name=${categoryName}`);
         if (categoryContains) query.push(`category_name_icontains=${categoryContains}`);
-
-        if (query.length > 0) url += `?${query.join("&")}`;
+        if (query.length) url += `?${query.join("&")}`;
 
         const response = await apiClient.get(url);
         setProjectContent(response.data);
@@ -75,20 +71,17 @@ export default function ProjectsClient() {
     loadData();
   }, [categoryId, categoryName, categoryContains]);
 
+  // Dynamic filter buttons
   const dynamicFilters = ["All"];
-  if (projectsContent?.data) {
-    const names = new Set<string>();
-    projectsContent.data.forEach((project) => {
-      project.categories?.forEach((c) => c?.name && names.add(c.name));
-    });
-    dynamicFilters.push(...Array.from(names));
-  }
+  projectsContent?.data?.forEach((project) =>
+    project.categories?.forEach((c) => c?.name && dynamicFilters.push(c.name))
+  );
 
   const filteredProjects =
     activeFilter === "All"
       ? projectsContent?.data || []
-      : projectsContent?.data.filter((project) =>
-          project.categories?.some((c) => c.name === activeFilter)
+      : projectsContent?.data.filter((p) =>
+          p.categories?.some((c) => c.name === activeFilter)
         ) || [];
 
   return (
@@ -114,7 +107,7 @@ export default function ProjectsClient() {
             )}
 
             <div className="flex flex-wrap gap-3 mb-16">
-              {dynamicFilters.map((filter) => (
+              {Array.from(new Set(dynamicFilters)).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
@@ -135,47 +128,29 @@ export default function ProjectsClient() {
                   <div className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 transition-all group cursor-pointer h-full">
                     <div className="h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                       <img
-                        src={
-                          project.images && project.images.length > 0
-                            ? project.images[0].image
-                            : "/placeholder.svg"
-                        }
+                        src={project.images?.[0]?.image || "/placeholder.svg"}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                       />
                     </div>
-
                     <div className="p-6 space-y-4">
                       <h3 className="text-xl font-bold text-white">{project.title}</h3>
                       <p className="text-gray-400">{project.subtitle}</p>
 
                       <div className="flex flex-wrap gap-2">
-                        {(project.categories || []).map((cat, i) => (
-                          <Badge
-                            key={i}
-                            variant="outline"
-                            className="border-secondary/50 text-secondary text-xs"
-                          >
+                        {project.categories?.map((cat, i) => (
+                          <Badge key={i} variant="outline" className="border-secondary/50 text-secondary text-xs">
                             {cat.name}
                           </Badge>
                         ))}
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        {(Array.isArray(project.tags)
-                          ? project.tags
-                          : project.tags?.split(",")
-                        )
-                          ?.filter(Boolean)
-                          ?.map((tag, i) => (
-                            <Badge
-                              key={i}
-                              variant="outline"
-                              className="border-primary/50 text-primary text-xs"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
+                        {(Array.isArray(project.tags) ? project.tags : project.tags?.split(","))?.filter(Boolean).map((tag, i) => (
+                          <Badge key={i} variant="outline" className="border-primary/50 text-primary text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
                   </div>
