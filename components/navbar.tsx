@@ -25,7 +25,7 @@ export function Navbar() {
         try {
           const response = await apiClient.get("/home/")
           setHomeContent(response.data)
-          console.log("home data", response)
+          // console.log("home data", response)
         } catch (error) {
           console.error("Failed to load home:", error)
         }

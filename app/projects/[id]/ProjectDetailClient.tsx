@@ -15,7 +15,7 @@ type ProjectContentProps = {
   subtitle: string
   description: string
   fullDescription: string
-  category: Array<{ name?: string; value?: string }>
+  categories: Array<{ name?: string; value?: string }>
   tech_stack: string[]
   github_link: string
   live_demo: string
@@ -107,7 +107,7 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
             <p className="text-lg sm:text-xl text-secondary mb-6">{project.subtitle}</p>
 
             <div className="flex flex-wrap gap-2">
-              {project.category?.map((cat, i) => (
+              {project.categories?.map((cat, i) => (
                 <Badge
                   key={i}
                   variant="outline"

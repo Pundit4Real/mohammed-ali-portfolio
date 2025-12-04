@@ -1,74 +1,106 @@
-"use client"
+"use client";
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import apiClient from "@/utils/apiClient"
-import SkeletonProjectCard from "@/components/ui/SkeletonProjectCard"
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import apiClient from "@/utils/apiClient";
+import SkeletonProjectCard from "@/components/ui/SkeletonProjectCard";
+import { useSearchParams } from "next/navigation";
 
 type ProjectHeaderProps = {
-  headline: string
-  subheadline: string
-}
+  headline: string;
+  subheadline: string;
+};
 
 type ProjectContentProps = {
-  id: string
-  title: string
-  subtitle: string
-  description: string
-  category: Array<{ name?: string; value?: string }>
-  tech_stack: string[]
-  tags: string | string[]
-  github_link: string
-  live_demo: string
-  live_link: string
-  images: Array<{ id: number; image: string }>
-}
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  categories: Array<{ id?: number; name?: string }>;
+  tech_stack: string[];
+  tags: string | string[];
+  github_link: string;
+  live_demo: string;
+  live_link: string;
+  images: Array<{ id: number; image: string }>;
+};
 
 type ProjectDataProps = {
-  hero: ProjectHeaderProps
-  data: ProjectContentProps[]
-}
+  hero: ProjectHeaderProps;
+  data: ProjectContentProps[];
+};
 
 export default function Projects() {
-  const [activeFilter, setActiveFilter] = useState("All")
-  const [projectsContent, setProjectContent] = useState<ProjectDataProps | null>(null)
-  const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams();
+
+  // Correct backend filters
+  const categoryId = searchParams.get("categories");
+  const categoryName = searchParams.get("category_name");
+  const categoryContains = searchParams.get("category_name_icontains");
+
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [projectsContent, setProjectContent] = useState<ProjectDataProps | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await apiClient.get("/projects/")
-        setProjectContent(response.data)
-      } catch (error) {
-        console.error("Failed to load projects:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+        let url = "/projects/";
 
-  const dynamicFilters = ["All"]
+        const query = [];
+        if (categoryId) query.push(`categories=${categoryId}`);
+        if (categoryName) query.push(`category_name=${categoryName}`);
+        if (categoryContains) query.push(`category_name_icontains=${categoryContains}`);
+
+        if (query.length > 0) url += `?${query.join("&")}`;
+
+        const response = await apiClient.get(url);
+        setProjectContent(response.data);
+
+        // Auto-activate the correct category in UI
+        if (categoryName) setActiveFilter(categoryName);
+        else if (categoryId) {
+          // Find the category name by ID from the loaded data
+          const found = response.data.data
+            ?.flatMap((p: any) => p.categories)
+            ?.find((c: any) => String(c?.id) === String(categoryId));
+
+          if (found?.name) setActiveFilter(found.name);
+        }
+
+      } catch (error) {
+        console.error("Failed to load projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [categoryId, categoryName, categoryContains]);
+
+  // Build dynamic filters from API response
+  const dynamicFilters = ["All"];
 
   if (projectsContent?.data) {
-    const categoryFilters = new Set<string>()
+    const names = new Set<string>();
     projectsContent.data.forEach((project) => {
-      project.category?.forEach((c) => {
-        if (c?.name) categoryFilters.add(c.name)
-      })
-    })
-    dynamicFilters.push(...Array.from(categoryFilters))
+      project.categories?.forEach((c) => {
+        if (c?.name) names.add(c.name);
+      });
+    });
+    dynamicFilters.push(...Array.from(names));
   }
 
+  // UI Filter Logic
   const filteredProjects =
     activeFilter === "All"
       ? projectsContent?.data || []
       : projectsContent?.data.filter((project) =>
-          project.category?.some((c) => c.name === activeFilter)
-        ) || []
+          project.categories?.some((c) => c.name === activeFilter)
+        ) || [];
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -77,7 +109,6 @@ export default function Projects() {
       <section className="flex-1 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            // Skeleton Grid
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonProjectCard key={i} />
@@ -92,6 +123,13 @@ export default function Projects() {
                 {projectsContent?.hero.subheadline}
               </p>
 
+              {(categoryId || categoryName || categoryContains) && (
+                <p className="mb-6 text-primary text-lg">
+                  Showing filtered results...
+                </p>
+              )}
+
+              {/* FILTER BUTTONS */}
               <div className="flex flex-wrap gap-3 mb-16">
                 {dynamicFilters.map((filter) => (
                   <button
@@ -108,6 +146,7 @@ export default function Projects() {
                 ))}
               </div>
 
+              {/* PROJECT GRID */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProjects.map((project) => (
                   <Link key={project.id} href={`/projects/${project.id}`}>
@@ -129,13 +168,13 @@ export default function Projects() {
                         <p className="text-gray-400">{project.subtitle}</p>
 
                         <div className="flex flex-wrap gap-2">
-                          {(project.category || []).map((category, i) => (
+                          {(project.categories || []).map((cat, i) => (
                             <Badge
                               key={i}
                               variant="outline"
                               className="border-secondary/50 text-secondary text-xs"
                             >
-                              {category.name}
+                              {cat.name}
                             </Badge>
                           ))}
                         </div>
@@ -165,5 +204,5 @@ export default function Projects() {
 
       <Footer />
     </main>
-  )
+  );
 }
