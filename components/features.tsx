@@ -63,7 +63,10 @@ export function Features() {
               >
                 <Icon className="w-12 h-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-3">{service.title}</h3>
-                <p className="text-gray-400">{service.description}</p>
+                <p
+                  className="text-gray-400"
+                  dangerouslySetInnerHTML={{ __html: service.description }}
+                />
               </div>
             );
           })}

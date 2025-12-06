@@ -177,7 +177,10 @@ export default function ProjectDetailClient({ projectId }: ProjectDataProps) {
             <div className="md:col-span-2">
               <div className="bg-card border border-border rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4">Overview</h2>
-                <p className="text-gray-400 leading-relaxed">{project.description}</p>
+                <p
+                  className="text-gray-400 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: project.description }}
+                />
               </div>
             </div>
 
